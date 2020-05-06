@@ -17,11 +17,31 @@ void write_header(int width, int height) {
 	std::cout << 255 << '\n';
 }
 
+bool hits_sphere(const Point3d& center, double radius, const Ray& r) {
+	const Vector3& v = r.getDirection();
+	const Point3d& o = r.getOrigin();
+
+	double a = v.length_squared();
+	double b = 2 * dot(o, v) + 2 * dot(v, center);
+	double c = center.length_squared() + o.length_squared() + 2 * dot(o, center) - radius * radius;
+
+	double discrim = b * b - 4 * a * c;
+
+	return discrim > 0;
+}
+
 Color ray_color(const Ray& r) {
+
+	if (hits_sphere(Point3d(0, 0, -0.5), 0.5, r)) {
+		return Color(0, 1, 0);
+	}
+
 	Vector3 u = unit_vector(r.getDirection());
 	double grad = 0.5 * (u[1] + 1);
 	return (1 - grad) * Color(1, 1, 1) + grad * Color(0.4, 0.6, 1);
 }
+
+
 
 int main() {
 	const double aspect_ratio = 16.0 / 9.0;
@@ -38,12 +58,14 @@ int main() {
 
 
 	for (int y = 0; y < image_height; y++) {
-		std::cerr << "Printing scanline: " << y << '\n' << std::flush;
+		// std::cerr << "Printing scanline: " << y << '\n' << std::flush;
 		for (int x = 0; x < image_width; x++) {
+
 			double xf = double(x) / (image_width - 1);
 			double yf = double(y) / (image_height - 1);
 
 			Ray r(origin, bottom_left + xf * x_max + yf * y_max);
+
 			write_color(std::cout, ray_color(r));
 		}
 	}
