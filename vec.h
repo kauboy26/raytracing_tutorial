@@ -85,7 +85,7 @@ inline Vector3 cross(const Vector3& v1, const Vector3& v2) {
 		);
 }
 
-inline Vector3 unit_vector(Vector3& v) {
+inline Vector3 unit_vector(const Vector3& v) {
 	return v / v.length();
 }
 
